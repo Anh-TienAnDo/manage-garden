@@ -26,3 +26,4 @@ https://www.geeksforgeeks.org/timefield-django-models/
 
 1. sub to topic -> on messenge
 2. khi nhận data thì xác định topic rồi xử lý dữ liệu để lưu hoặc publish
+ da cap nhat
