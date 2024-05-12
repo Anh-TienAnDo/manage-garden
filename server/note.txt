@@ -1,0 +1,8 @@
+pip install django==4.0.1
+pip install djongo==1.3.6
+pip install pymongo==3.12.3
+django-admin startproject
+cd ManageGarden
+python manage.py startapp
+tạo db garden trong mongodb
+
