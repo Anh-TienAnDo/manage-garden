@@ -1,7 +1,0 @@
-code sử dụng mqtt broker trên nền thàng broker mqtt.
-//MQTT Broker
-topic sử dụng:
-const char *mqtt_server = "broker.emqx.io";
-const char *topic = "mcu8266/tmp";   // Topic để gửi dữ liệu nhiệt độ và độ ẩm ánh sáng
-const char *topic2 = "esp8266/led";  // Topic để điều khiển LED
-const char *topic3 = "esp8266/fan";  // Topic để điều khiển quat
