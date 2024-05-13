@@ -5,7 +5,6 @@ from datetime import time
 # Create your models here.
 class DieuKhien(models.Model):
     manhdat = models.OneToOneField(ManhDat, models.SET_NULL, null=True)
-
     lamp_time_on = models.TimeField(default=time(18,00,00))
     lamp_time_off = models.TimeField(default=time(6,00,00))
     water_pump_on = models.IntegerField(default=50)
@@ -29,5 +28,5 @@ class DieuKhien(models.Model):
     #                   (MO_MAY_CHE, 'MO_MAY_CHE'),
     #             (DONG_MAY_CHE, 'DONG_MAY_CHE'),)
     def __str__(self):
-        return self.str(manhdat)
+        return self.manhdat.name
 

@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'dieukhien',
     'lichsu',
     'nguoidung',
-    'djongo',
     'rest_framework',
 ]
 
