@@ -22,7 +22,7 @@ urlpatterns = [
     path('publish/', publish_message, name='publish'),
     path('', home, name="home"),
     path('user/', include('nguoidung.urls')),
-    # path('manhdat/', include('manhdat.urls')),
+    path('lands/', include('manhdat.urls')),
     # path('dieukhien/', include('dieukhien.urls')),
     # path('lichsu/', include('lichsu.urls')),
 ]
