@@ -84,15 +84,15 @@ d=ConnectionDB()
 # }
 # d.insert_lichsuhanhdong('lichsu_lichsuhanhdong', hanhdong_data)  
 # print(d.select_all('lichsu_lichsuhanhdong')) 
-cambien_data = {
-    'nhiet_do': 30,
-    'do_am': 50,
-    'do_am_dat': 60,
-    'anh_sang': 1000,
-    'manhdat_id': 1,
-}
-d.insert_lichsucambien('lichsu_lichsucambien', cambien_data)
-print(d.select_all('lichsu_lichsucambien'))
+# cambien_data = {
+#     'nhiet_do': 30,
+#     'do_am': 50,
+#     'do_am_dat': 60,
+#     'anh_sang': 1000,
+#     'manhdat_id': 1,
+# }
+# d.insert_lichsucambien('lichsu_lichsucambien', cambien_data)
+# print(d.select_all('lichsu_lichsucambien'))
 print(d.select_all('manhdat_manhdat'))
 
 

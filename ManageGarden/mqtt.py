@@ -14,22 +14,6 @@ DIEUKHIEN_TABLE = 'dieukhien_dieukhien'
 LICHSUHANHDONG_TABLE = 'lichsu_lichsuhanhdong'
 LICHSUCAMBIEN_TABLE = 'lichsu_lichsucambien'
 
-db = ConnectionDB()
-cambien_data = {
-    'nhiet_do': None,
-    'do_am': None,
-    'do_am_dat': None,
-    'anh_sang': None,
-    'manhdat_id': None,
-}
-hanhdong_data = {
-    'mai_che': None,
-    'quat_mat': None,
-    'may_tuoi_nuoc': None,
-    'den_chieu_sang': None,
-    'manhdat_id': None,
-}
-
 def on_subscribe(client, userdata, mid, granted_qos):
     print("Subscribed: " + str(userdata) + " " + str(mid) + " " + str(granted_qos))
 
@@ -47,6 +31,14 @@ def on_message(client, userdata, msg):
         None
     """
     # ---------------------------
+    db = ConnectionDB()
+    cambien_data = {
+        'nhiet_do': None,
+        'do_am': None,
+        'do_am_dat': None,
+        'anh_sang': None,
+        'manhdat_id': None,
+    }
     topic = str(msg.topic)
     print(topic)
     data = json.loads(msg.payload.decode("UTF-8"))  # type dict
@@ -61,23 +53,31 @@ def on_message(client, userdata, msg):
 
     if 'sensor' in topic:
         try:
-            nhiet_do = int(data["air_temperature"])
-            do_am = int(data["air_humidity"])
-            do_am_dat = int(data["soil_moisture"])
-            anh_sang = int(data["light"])
+            nhiet_do = float(data["air_temperature"])
+            do_am = float(data["air_humidity"])
+            do_am_dat = float(data["soil_moisture"])
+            anh_sang = float(data["light"])
         except:
             print(f"Error get data from {topic}")
             return
-        print("saved history_sensor")
-        # history_sensor = LichSuCamBien.objects.create(manhdat=land, nhiet_do=nhiet_do,
-        #                                               do_am=do_am, do_am_dat=do_am_dat,
-        #                                               anh_sang=anh_sang)
-        # dieukhien_land = DieuKhien.objects.get(manhdat=land)
+        try:
+            cambien_data['nhiet_do'] = nhiet_do
+            cambien_data['do_am'] = do_am
+            cambien_data['do_am_dat'] = do_am_dat
+            cambien_data['anh_sang'] = anh_sang
+            cambien_data['manhdat_id'] = land_id
+            db.insert_lichsucambien(LICHSUCAMBIEN_TABLE, cambien_data)
+            print("saved history_sensor")
+        except Exception as e:
+            print(f"Error: {e}")
+
         dieukhien_land = db.select_by_dieukhienmanhdat(DIEUKHIEN_TABLE, land_id)
 
         # Lấy lịch sử hành động gần đây nhất cho mỗi mảnh đất
         # lich_su_hanh_dong_gan_nhat = LichSuHanhDong.objects.filter(manhdat=land).order_by('-created_at').first()
         lich_su_hanh_dong_gan_nhat = db.select_lichsuhanhdong_by_manhdat_id(LICHSUHANHDONG_TABLE, land_id)[0]
+        print('lich_su_hanh_dong_gan_nhat')
+        print(lich_su_hanh_dong_gan_nhat)
         is_send = False
         if lich_su_hanh_dong_gan_nhat:
             action_land = {
@@ -108,8 +108,10 @@ def on_message(client, userdata, msg):
             is_send = True
         # --------------------
         # time lamp
-        now = datetime.now().time()
-        if now >= dieukhien_land.get('lamp_time_off') and now < dieukhien_land.lamp_time_on:
+        now_seconds = (datetime.now() - datetime.combine(datetime.now(), datetime.min.time())).seconds
+        lamp_time_off_seconds = dieukhien_land.get('lamp_time_off').seconds
+        lamp_time_on_seconds = dieukhien_land.get('lamp_time_on').seconds
+        if now_seconds >= lamp_time_off_seconds and now_seconds < lamp_time_on_seconds:
             if anh_sang <= 300 and action_land['lamp'] == 0:
                 action_land['lamp'] = 1
                 is_send = True
@@ -122,7 +124,9 @@ def on_message(client, userdata, msg):
                 is_send = True
         # --------------------
         # time sun_roof
-        if now >= dieukhien_land.get('sun_roof_time_close') and now < dieukhien_land.sun_roof_time_open:
+        sun_roof_close_seconds = dieukhien_land.get('sun_roof_time_close').seconds
+        sun_roof_open_seconds = dieukhien_land.get('sun_roof_time_open').seconds
+        if now_seconds >= sun_roof_close_seconds and now_seconds < sun_roof_open_seconds:
             # Thực hiện việc đóng mái che
             if anh_sang > 2000 and action_land['sun_roof'] == 1:
                 action_land['sun_roof'] = 0
@@ -144,17 +148,32 @@ def on_message(client, userdata, msg):
                 print("Error publishing:", pub_error)
 
     elif 'status' in topic:
+        hanhdong_data = {
+            'mai_che': None,
+            'quat_mat': None,
+            'may_tuoi_nuoc': None,
+            'den_chieu_sang': None,
+            'manhdat_id': None,
+        }
         try:
-            mai_che = data["sun_roof"]
-            quat_mat = data["fan"]
-            may_tuoi_nuoc = data["water_pump"]
-            den_chieu_sang = data["lamp"]
+            mai_che = int(data["sun_roof"])
+            quat_mat = int(data["fan"])
+            may_tuoi_nuoc = int(data["water_pump"])
+            den_chieu_sang = int(data["lamp"])
         except:
             print(f"Error get data from {topic}")
             return
-        print('saved history_status')
-        # history_status = LichSuHanhDong.objects.create(manhdat=land, mai_che=mai_che, quat_mat=quat_mat,
-        #                                                may_tuoi_nuoc=may_tuoi_nuoc, den_chieu_sang=den_chieu_sang)
+        try:
+            hanhdong_data['mai_che'] = mai_che
+            hanhdong_data['quat_mat'] = quat_mat
+            hanhdong_data['may_tuoi_nuoc'] = may_tuoi_nuoc
+            hanhdong_data['den_chieu_sang'] = den_chieu_sang
+            hanhdong_data['manhdat_id'] = land_id
+            db.insert_lichsuhanhdong(LICHSUHANHDONG_TABLE, hanhdong_data)
+            print('saved history_status')
+        except Exception as e:
+            print(f"Error: {e}")
+            
     else:
         print(f"UnKnow: {topic}")
         return
