@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load template_tags %}
+
+{%block header%}
+{% include 'header.html' %}
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+	table {
+		border-collapse: collapse;
+	}
+
+	td {
+		padding: 5px 10px;
+	}
+
+	.border {
+		border: 1px solid black;
+	}
+
+	.right-align {
+		text-align: right;
+	}
+</style>
+{% endblock header%}
+
+{% block main-content%}
+
+<div class="row h1 mb-5 text-center">
+	<b>Quản lý mảnh đất {{land_id}} </b>
+</div>
+
+<div class="row">
+	<div class="col-6 mx-auto text-center">
+		<a href="{% url 'users-of-land' id=land_id%}" class="btn btn-outline-primary">
+			Quản lý cộng tác viên
+		</a>
+	</div>
+
+	<div class="col-6 mx-auto text-center">
+		<a href="{% url 'lichsu:lichsu-land' id=land_id%}" class="btn btn-outline-primary">
+			Xem lịch sử
+		</a>
+	</div>
+
+</div>
+
+<div class="px-3">
+	<div class="w-full my-6 mx-auto p-6 rounded-xl">
+		<div>
+			<table class="mx-6 py-auto px-6">
+				<table class="mx-10 border border-dark">
+					<tr class="border border-dark">
+						<td class="font-bold left-align border border-dark">Các hành động</td>
+						<td class="font-bold left-align border border-dark">Điều kiện kích hoạt</td>
+						<td class="font-bold left-align">Điều kiện tạm dừng</td>
+						<td class="font-bold left-align"></td>
+						<td class="font-bold left-align border border-dark">Trạng thái hiện tại (bật/tắt)</td>
+					</tr>
+					<tr class="border border-dark">
+						<td class="left-align border border-dark">Bật đèn chiếu sáng</td>
+						<form action="{% url 'dieukhien:update-lamp' id=land_id %}" method="post">
+							{% csrf_token %}
+							<td class="left-align border border-dark">Từ: <input type="number" min="0" max="23"
+									name="lamp_time_on_hour" value="{{ dieukhien.lamp_time_on|get_hour }}"
+									class="border border-dark w-1/6 rounded-xl text-center"> h
+								<input type="number" min="0" max="59" name="lamp_time_on_minute"
+									value="{{ dieukhien.lamp_time_on|get_minute }}"
+									class="border border-dark w-1/6 rounded-xl text-center">
+							</td>
+							<td class="left-align border border-dark">Đến: <input type="number" min="0" max="23"
+									name="lamp_time_off_hour" value="{{ dieukhien.lamp_time_off|get_hour }}"
+									class="border border-dark w-1/6 rounded-xl text-center"> h
+								<input type="number" min="0" max="59" name="lamp_time_off_minute"
+									value="{{ dieukhien.lamp_time_off|get_minute }}"
+									class="border border-dark w-1/6 rounded-xl text-center">
+							</td>
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-success" name="update">Cập nhật</button></td>
+							{% if lichsu.den_chieu_sang%}
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-warning" name="action" value="turn_off">Tắt ngay</button></td>
+							{% else %}
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-warning" name="action" value="turn_on">Bật ngay</button></td>
+							{% endif %}
+
+						</form>
+					</tr>
+					<tr>
+						<td class="left-align border border-dark">Bật vòi tưới nước</td>
+						<form action="{% url 'dieukhien:update-pump' id=land_id %}" method="post">
+							{% csrf_token %}
+							<td class="left-align border border-dark">Bật khi độ ẩm < <input type="number" min="30"
+									max="100" name="water_pump_on" value="{{ dieukhien.water_pump_on }}"
+									class="border border-dark w-1/6 rounded-xl text-center"> %</td>
+							<td class="left-align border border-dark">Tắt khi độ ẩm > <input type="number" min="50"
+									max="100" name="water_pump_off" value="{{ dieukhien.water_pump_off }}"
+									class="border border-dark w-1/6 rounded-xl text-center"> %</td>
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-success" name="update">Cập nhật</button></td>
+							{% if lichsu.may_tuoi_nuoc%}
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-warning" name="action" value="turn_off">Tắt ngay</button></td>
+							{% else %}
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-warning" name="action" value="turn_on">Bật ngay</button></td>
+							{% endif %}
+						</form>
+					</tr>
+					<tr>
+						<td class="left-align border border-dark">Quạt làm mát</td>
+						<form action="{% url 'dieukhien:update-fan' id=land_id %}" method="post">
+							{% csrf_token %}
+							<td class="left-align border border-dark">Bật khi nhiệt độ > <input type="number" min="20"
+									max="45" name="fan_on" value="{{ dieukhien.fan_on }}"
+									class="border border-dark w-1/6 rounded-xl text-center"> *C</td>
+							<td class="left-align border border-dark">Tắt khi nhiệt độ < <input type="number" min="20"
+									max="45" name="fan_off" value="{{ dieukhien.fan_off }}"
+									class="border border-dark w-1/6 rounded-xl text-center"> *C</td>
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-success" name="update">Cập nhật</button></td>
+							{% if lichsu.quat_mat%}
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-warning" name="action" value="turn_off">Tắt ngay</button></td>
+							{% else %}
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-warning" name="action" value="turn_on">Bật ngay</button></td>
+							{% endif %}
+						</form>
+					</tr>
+					<tr>
+						<td class="left-align w-1/5 border border-dark">Mái che nắng(giả sử trồng cây trong nhà
+							kính)</td>
+						<form action="{% url 'dieukhien:update-roof' id=land_id %}" method="post">
+							{% csrf_token %}
+							<td class="left-align border border-dark">Từ: <input type="number" min="0" max="23"
+									name="sun_roof_time_close_hour" value="{{ dieukhien.sun_roof_time_close|get_hour }}"
+									class="border border-dark w-1/6 rounded-xl text-center"> h
+								<input type="number" min="0" max="59" name="sun_roof_time_close_minute"
+									value="{{ dieukhien.sun_roof_time_close|get_minute }}"
+									class="border border-dark w-1/6 rounded-xl text-center">
+							</td>
+							<td class="left-align border border-dark">Đến: <input type="number" min="0" max="23"
+									name="sun_roof_time_open_hour" value="{{ dieukhien.sun_roof_time_open|get_hour }}"
+									class="border border-dark w-1/6 rounded-xl text-center"> h
+								<input type="number" min="0" max="59" name="sun_roof_time_open_minute"
+									value="{{ dieukhien.sun_roof_time_open|get_minute }}"
+									class="border border-dark w-1/6 rounded-xl text-center">
+							</td>
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-success" name="update">Cập nhật</button></td>
+							{% if lichsu.mai_che%}
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-warning" name="action" value="turn_off">Đóng ngay</button></td>
+							{% else %}
+							<td class="font-bold left-align border border-dark text-center"><button type="submit"
+									class="btn btn-warning" name="action" value="turn_on">Mở ngay</button></td>
+							{% endif %}
+						</form>
+					</tr>
+				</table>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+</div>
+
+
+
+{% endblock main-content%}

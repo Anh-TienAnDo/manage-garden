@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load template_tags %}
+
+{% block title %}
+Thu Vien 3 Goc
+{% endblock %}
+
+{% block header%}
+{% include 'header.html' %}
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+	table {
+		border-collapse: collapse;
+	}
+
+	td {
+		padding: 5px 10px;
+	}
+
+	.border {
+		border: 1px solid black;
+	}
+
+	.right-align {
+		text-align: right;
+	}
+</style>
+{% endblock header %}
+
+{% block banner-slider%}
+
+{% endblock banner-slider %}
+
+<!--main conten-->
+{% block main-content%}
+
+<div class="px-6 py-6">
+	<div class="w-full my-6 mx-auto p-6 rounded-xl">
+		<h1 class="mb-6 text-3xl">
+			<b>Lịch sử mảnh đất {{land_id}}</b>
+		</h1>
+		<div>
+			<table class="mx-6 py-auto px-6">
+				<table class="mx-10 border border-dark">
+					<tr class="border border-dark">
+						<td class="font-bold left-align border border-dark">Nhiệt độ</td>
+						<td class="font-bold left-align border border-dark">Độ ẩm không khí</td>
+						<td class="font-bold left-align">Độ ẩm đất</td>
+						<td class="font-bold left-align border border-dark">Ánh sáng</td>
+						<td class="font-bold left-align border border-dark">Thời gian</td>
+					</tr>
+
+					{% for ls in ds_lichsu %}
+					<tr class="border border-dark">
+						<td class="left-align border border-dark">{{ ls.nhiet_do }}*C</td>
+						<td class="left-align border border-dark">{{ ls.do_am }}%</td>
+						<td class="left-align">{{ ls.do_am_dat }}%</td>
+						<td class="left-align border border-dark">{{ ls.anh_sang }} lux</td>
+						<td class="left-align border border-dark">{{ ls.created_at|custom_datetime_format }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+</div>
+
+
+{% endblock main-content %}

@@ -76,14 +76,14 @@ class ConnectionDB:
         
 d=ConnectionDB()
 # hanhdong_data = {
-#     'mai_che': 1,
-#     'quat_mat': 1,
-#     'may_tuoi_nuoc': 1,
+#     'mai_che': 0,
+#     'quat_mat': 0,
+#     'may_tuoi_nuoc': 0,
 #     'den_chieu_sang': 1,
-#     'manhdat_id': 1,
+#     'manhdat_id': 2,
 # }
-# d.insert_lichsuhanhdong('lichsu_lichsuhanhdong', hanhdong_data)  
-# print(d.select_all('lichsu_lichsuhanhdong')) 
+# d.insert_lichsuhanhdong('lichsu_lichsuhanhdong', hanhdong_data)
+# print(d.select_all('lichsu_lichsuhanhdong'))
 # cambien_data = {
 #     'nhiet_do': 30,
 #     'do_am': 50,

@@ -23,6 +23,6 @@ urlpatterns = [
     path('', home, name="home"),
     path('user/', include('nguoidung.urls')),
     path('lands/', include('manhdat.urls')),
-    # path('dieukhien/', include('dieukhien.urls')),
-    # path('lichsu/', include('lichsu.urls')),
+    path('dieukhien/', include('dieukhien.urls')),
+    path('lichsu/', include('lichsu.urls')),
 ]

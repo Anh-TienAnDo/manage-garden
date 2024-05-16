@@ -3,16 +3,36 @@ import json
 from .connection_db import ConnectionDB
 from datetime import datetime
 
-MQTT_SERVER = "broker.mqttdashboard.com"
+# MQTT_SERVER = "broker.mqttdashboard.com"
+MQTT_SERVER = "broker.emqx.io"
 MQTT_PORT = 1883
+MQTT_USERNAME = 'emqx'
+MQTT_PASSWORD = '12345678'
+
 TOPIC = '/htn/g6_smart_garden/'  # land/temp/edit
 TOPIC_CAMBIEN = '/htn/g6_smart_garden/+/sensor'
 TOPIC_TRANGTHAI = '/htn/g6_smart_garden/+/status'
 TOPIC_HANHDONG = '/htn/g6_smart_garden/+/action'
+
 MANHDAT_TABLE = 'manhdat_manhdat'
 DIEUKHIEN_TABLE = 'dieukhien_dieukhien'
 LICHSUHANHDONG_TABLE = 'lichsu_lichsuhanhdong'
 LICHSUCAMBIEN_TABLE = 'lichsu_lichsucambien'
+
+# For paho-mqtt 2.0.0, you need to add the properties parameter.
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("Connected to MQTT Broker!")
+    else:
+        print("Failed to connect, return code %d\n", rc)
+    # # For paho-mqtt 2.0.0, you need to set callback_api_version.
+    # client = client = paho.Client(paho.CallbackAPIVersion.VERSION1)
+    #
+    # client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
+    # client.on_connect = on_connect
+    # client.connect(MQTT_SERVER, MQTT_PORT)
+    # return client
+
 
 def on_subscribe(client, userdata, mid, granted_qos):
     print("Subscribed: " + str(userdata) + " " + str(mid) + " " + str(granted_qos))
@@ -70,6 +90,8 @@ def on_message(client, userdata, msg):
             print("saved history_sensor")
         except Exception as e:
             print(f"Error: {e}")
+            # change
+            return
 
         dieukhien_land = db.select_by_dieukhienmanhdat(DIEUKHIEN_TABLE, land_id)
 
@@ -112,10 +134,12 @@ def on_message(client, userdata, msg):
         lamp_time_off_seconds = dieukhien_land.get('lamp_time_off').seconds
         lamp_time_on_seconds = dieukhien_land.get('lamp_time_on').seconds
         if now_seconds >= lamp_time_off_seconds and now_seconds < lamp_time_on_seconds:
-            if anh_sang <= 300 and action_land['lamp'] == 0:
+            # if anh_sang <= 300 and action_land['lamp'] == 0:
+            if anh_sang <= 800 and action_land['lamp'] == 0:
                 action_land['lamp'] = 1
                 is_send = True
-            elif anh_sang > 300 and action_land['lamp'] == 1:
+            # elif anh_sang > 300 and action_land['lamp'] == 1:
+            elif anh_sang > 800 and action_land['lamp'] == 1:
                 action_land['lamp'] = 0
                 is_send = True
         else:
@@ -138,14 +162,23 @@ def on_message(client, userdata, msg):
                 action_land['sun_roof'] = 1
                 is_send = True
         # --------------------
-        if is_send:
-            t = TOPIC_HANHDONG
-            t = t.replace('+', str(land_id))
-            action_land_json = json.dumps(action_land)
-            try:
-                client.publish(t, action_land_json, qos=1)
-            except Exception as pub_error:
-                print("Error publishing:", pub_error)
+        t = TOPIC_HANHDONG
+        t = t.replace('+', str(land_id))
+        action_land_json = json.dumps(action_land)
+        try:
+            client.publish(t, action_land_json, qos=1)
+            print(t)
+            print(f"da publish {action_land_json}")
+        except Exception as pub_error:
+            print("Error publishing:", pub_error)
+        # if is_send:
+        #     t = TOPIC_HANHDONG
+        #     t = t.replace('+', str(land_id))
+        #     action_land_json = json.dumps(action_land)
+        #     try:
+        #         client.publish(t, action_land_json, qos=1)
+        #     except Exception as pub_error:
+        #         print("Error publishing:", pub_error)
 
     elif 'status' in topic:
         hanhdong_data = {
@@ -173,13 +206,18 @@ def on_message(client, userdata, msg):
             print('saved history_status')
         except Exception as e:
             print(f"Error: {e}")
+            # change
+            return
             
     else:
         print(f"UnKnow: {topic}")
-        return
+
+    db.close_connection()
 
 
 client = paho.Client(paho.CallbackAPIVersion.VERSION1)
+client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
+client.on_connect = on_connect
 client.on_subscribe = on_subscribe
 client.on_message = on_message
 client.connect(MQTT_SERVER, MQTT_PORT)

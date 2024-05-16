@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{%block header%}
+{% include 'header.html' %} 
+{% endblock header%}
+
+{% block main-content%}
+<div class="container m-3">
+    <h2>Danh sách cộng tác viên của Mảnh đất {{land_id}}</h2>
+    <hr>
+    <div class="row">
+        <div class="col-4"><h4>Số lượng: </h4></div>
+        <h5 class="col-2">{{users|length}}</h5>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-3"><h4>Name</h4></div>
+        <div class="col-4"><h4>Email</h4></div>
+        <div class="col-2"><h4>Rule</h4></div>
+        <div class="col-1"><h4>Active</h4></div>
+        <div class="col-2"><h4>Action</h4></div>
+    </div>
+    <hr>
+
+  {%for user in users%}
+    <div class="row">
+        <div class="col-3"><h6>{{user.user.username}}</h6></div>
+        <div class="col-4"><h6>{{user.user.email}}</h6></div>
+        {% if user.role == 1%}
+        <div class="col-2"><h6>Chủ</h6></div>
+        {%else%}
+        <div class="col-2"><h6>Khách</h6></div>
+        {%endif%}
+        <div class="col-1"><h6>{{user.user.is_active}}</h6></div>
+        <div class="col-2">
+            <h5>
+                <a class="btn btn-outline-danger" href="#">
+                    <b>Xóa</b>
+                </a>
+            </h5>
+        </div>
+    </div>
+  {%endfor%}
+</div>
+{% endblock main-content%}
