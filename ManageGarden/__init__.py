@@ -6,11 +6,11 @@ from .mqtt import client
 # Cài đặt pymysql cho MySQL
 pymysql.install_as_MySQLdb()
 
-# try:
-#     client.loop_start()
-# except Exception as e:
-#     print(e)
-#     client.disconnect()
+try:
+    client.loop_start()
+except Exception as e:
+    print(e)
+    client.disconnect()
 
 # # Đảm bảo rằng ứng dụng mqtt đã được cài đặt
 # def start_mqtt_client():

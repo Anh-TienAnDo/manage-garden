@@ -9,6 +9,7 @@ Thu Vien 3 Goc
 {% block header%}
 {% include 'header.html' %}
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 	table {
 		border-collapse: collapse;
@@ -35,11 +36,33 @@ Thu Vien 3 Goc
 <!--main conten-->
 {% block main-content%}
 
-<div class="px-6 py-6">
+<div class="px-6">
 	<div class="w-full my-6 mx-auto p-6 rounded-xl">
 		<h1 class="mb-6 text-3xl">
 			<b>Lịch sử mảnh đất {{land_id}}</b>
 		</h1>
+	</div>
+</div>
+<div class="row mx-3">
+	<div class="col-6">
+		<canvas id="sensor-tem-chart"></canvas>
+	</div>
+	<div class="col-6">
+		<canvas id="sensor-hum-chart"></canvas>
+	</div>
+</div>
+
+<div class="row my-3">
+	<div class="col-6">
+		<canvas id="sensor-land-chart"></canvas>
+	</div>
+	<div class="col-6">
+		<canvas id="sensor-light-chart"></canvas>
+	</div>
+</div>
+
+<div class="px-6 py-6">
+	<div class="w-full my-6 mx-auto p-6 rounded-xl">
 		<div>
 			<table class="mx-6 py-auto px-6">
 				<table class="mx-10 border border-dark">
@@ -68,5 +91,108 @@ Thu Vien 3 Goc
 
 </div>
 
+
+<script>
+	// Get the sensor data from the server
+	const sensorData = [
+		{% for ls in ds_lichsu %}
+		{
+			nhiet_do: {{ ls.nhiet_do }},
+			do_am: {{ ls.do_am }},
+			do_am_dat: {{ ls.do_am_dat }},
+			anh_sang: {{ ls.anh_sang }},
+			created_at: '{{ ls.created_at|custom_datetime_format }}'
+		},
+		{% endfor %}
+	];
+
+	// Extract the data for the line chart
+	const labels = sensorData.map(data => data.created_at);
+	const temperatureData = sensorData.map(data => data.nhiet_do);
+	const humidityData = sensorData.map(data => data.do_am);
+	const soilMoistureData = sensorData.map(data => data.do_am_dat);
+	const lightData = sensorData.map(data => data.anh_sang);
+
+	// Create the line chart
+	const ctx_tem = document.getElementById('sensor-tem-chart').getContext('2d');
+	const ctx_hum = document.getElementById('sensor-hum-chart').getContext('2d');
+	const ctx_land = document.getElementById('sensor-land-chart').getContext('2d');
+	const ctx_light = document.getElementById('sensor-light-chart').getContext('2d');
+
+	new Chart(ctx_tem, {
+		type: 'line',
+		data: {
+			labels: labels.slice(-30), // Only show the last 30 data points
+			datasets: [
+				{
+					label: 'Temperature',
+					data: temperatureData.slice(-30),
+					borderColor: 'red',
+					fill: false
+				},
+			]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false
+		}
+	});
+	new Chart(ctx_hum, {
+		type: 'line',
+		data: {
+			labels: labels.slice(-30), // Only show the last 30 data points
+			datasets: [
+				{
+					label: 'Humidity',
+					data: humidityData.slice(-30),
+					borderColor: 'blue',
+					fill: false
+				},
+			]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false
+		}
+	});
+	new Chart(ctx_land, {
+		type: 'line',
+		data: {
+			labels: labels.slice(-30), // Only show the last 30 data points
+			datasets: [
+				{
+					label: 'Soil Moisture',
+					data: soilMoistureData.slice(-30),
+					borderColor: 'green',
+					fill: false
+				},
+				
+			]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false
+		}
+	});
+	new Chart(ctx_light, {
+		type: 'line',
+		data: {
+			labels: labels.slice(-30), // Only show the last 30 data points
+			datasets: [
+				{
+					label: 'Light',
+					data: lightData.slice(-30),
+					borderColor: 'orange',
+					fill: false
+				}
+			]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false
+		}
+	});
+
+</script>
 
 {% endblock main-content %}

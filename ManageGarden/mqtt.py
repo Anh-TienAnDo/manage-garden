@@ -60,6 +60,7 @@ def on_message(client, userdata, msg):
         'manhdat_id': None,
     }
     topic = str(msg.topic)
+    print("receive data from topic: ")
     print(topic)
     data = json.loads(msg.payload.decode("UTF-8"))  # type dict
     print(data)
@@ -75,7 +76,7 @@ def on_message(client, userdata, msg):
         try:
             nhiet_do = float(data["air_temperature"])
             do_am = float(data["air_humidity"])
-            do_am_dat = float(data["soil_moisture"])
+            do_am_dat = float(data["soil_moisture"])/1024*100
             anh_sang = float(data["light"])
         except:
             print(f"Error get data from {topic}")
@@ -103,10 +104,10 @@ def on_message(client, userdata, msg):
         is_send = False
         if lich_su_hanh_dong_gan_nhat:
             action_land = {
-                'lamp'      : lich_su_hanh_dong_gan_nhat.get('den_chieu_sang'),
-                'water_pump': lich_su_hanh_dong_gan_nhat.get('may_tuoi_nuoc'),
-                'fan'       : lich_su_hanh_dong_gan_nhat.get('quat_mat'),
-                'sun_roof'  : lich_su_hanh_dong_gan_nhat.get('mai_che'),
+                'lamp'      : int(lich_su_hanh_dong_gan_nhat.get('den_chieu_sang')),
+                'water_pump': int(lich_su_hanh_dong_gan_nhat.get('may_tuoi_nuoc')),
+                'fan'       : int(lich_su_hanh_dong_gan_nhat.get('quat_mat')),
+                'sun_roof'  : int(lich_su_hanh_dong_gan_nhat.get('mai_che')),
             }
         else:
             action_land = {
@@ -115,46 +116,62 @@ def on_message(client, userdata, msg):
                 'fan'       : 0,
                 'sun_roof'  : 0,
             }
-        if nhiet_do >= dieukhien_land.get('fan_on') and action_land['fan'] == 0:
+        if nhiet_do >= float(dieukhien_land.get('fan_on')) and action_land['fan'] == 0:
             action_land['fan'] = 1
             is_send = True
-        elif nhiet_do <= dieukhien_land.get('fan_off') and action_land['fan'] == 1:
+        elif nhiet_do <= float(dieukhien_land.get('fan_off')) and action_land['fan'] == 1:
             action_land['fan'] = 0
             is_send = True
         # --------------------
-        if do_am_dat <= dieukhien_land.get('water_pump_on') and action_land['water_pump'] == 0:
+        if do_am_dat <= float(dieukhien_land.get('water_pump_on')) and action_land['water_pump'] == 0:
             action_land['water_pump'] = 1
             is_send = True
-        elif do_am_dat >= dieukhien_land.get('water_pump_off') and action_land['water_pump'] == 1:
+        elif do_am_dat >= float(dieukhien_land.get('water_pump_off')) and action_land['water_pump'] == 1:
             action_land['water_pump'] = 0
             is_send = True
         # --------------------
         # time lamp
         now_seconds = (datetime.now() - datetime.combine(datetime.now(), datetime.min.time())).seconds
-        lamp_time_off_seconds = dieukhien_land.get('lamp_time_off').seconds
-        lamp_time_on_seconds = dieukhien_land.get('lamp_time_on').seconds
+        lamp_time_off = datetime.strptime(str(dieukhien_land.get('lamp_time_off')), '%H:%M:%S').time()
+        lamp_time_on = datetime.strptime(str(dieukhien_land.get('lamp_time_on')), '%H:%M:%S').time()
+        lamp_time_on_seconds = (datetime.combine(datetime.min, lamp_time_on) - datetime.min).seconds
+        lamp_time_off_seconds = (datetime.combine(datetime.min, lamp_time_off) - datetime.min).seconds
+        # lamp_time_off_seconds = dieukhien_land.get('lamp_time_off').seconds
+        # lamp_time_on_seconds = dieukhien_land.get('lamp_time_on').seconds
+        print(lamp_time_off_seconds)
         if now_seconds >= lamp_time_off_seconds and now_seconds < lamp_time_on_seconds:
-            # if anh_sang <= 300 and action_land['lamp'] == 0:
-            if anh_sang <= 800 and action_land['lamp'] == 0:
-                action_land['lamp'] = 1
-                is_send = True
-            # elif anh_sang > 300 and action_land['lamp'] == 1:
-            elif anh_sang > 800 and action_land['lamp'] == 1:
+            if action_land['lamp'] == 1:
                 action_land['lamp'] = 0
                 is_send = True
+            # if anh_sang <= 300 and action_land['lamp'] == 0:
+            # if anh_sang <= 800 and action_land['lamp'] == 0:
+            #     action_land['lamp'] = 1
+            #     is_send = True
+            # # elif anh_sang > 300 and action_land['lamp'] == 1:
+            # elif anh_sang > 800 and action_land['lamp'] == 1:
+            #     action_land['lamp'] = 0
+            #     is_send = True
         else:
             if action_land['lamp'] == 0:
                 action_land['lamp'] = 1
                 is_send = True
         # --------------------
         # time sun_roof
-        sun_roof_close_seconds = dieukhien_land.get('sun_roof_time_close').seconds
-        sun_roof_open_seconds = dieukhien_land.get('sun_roof_time_open').seconds
+        sun_roof_close = datetime.strptime(str(dieukhien_land.get('sun_roof_time_close')), '%H:%M:%S').time()
+        sun_roof_open = datetime.strptime(str(dieukhien_land.get('sun_roof_time_open')), '%H:%M:%S').time()
+        sun_roof_open_seconds = (datetime.combine(datetime.min, sun_roof_open) - datetime.min).seconds
+        sun_roof_close_seconds = (datetime.combine(datetime.min, sun_roof_close) - datetime.min).seconds
+        
+        # sun_roof_close_seconds = dieukhien_land.get('sun_roof_time_close').seconds
+        # sun_roof_open_seconds = dieukhien_land.get('sun_roof_time_open').seconds
         if now_seconds >= sun_roof_close_seconds and now_seconds < sun_roof_open_seconds:
             # Thực hiện việc đóng mái che
-            if anh_sang > 2000 and action_land['sun_roof'] == 1:
+            if action_land['sun_roof'] == 1:
                 action_land['sun_roof'] = 0
                 is_send = True
+            # if anh_sang > 2000 and action_land['sun_roof'] == 1:
+            #     action_land['sun_roof'] = 0
+            #     is_send = True
 
         else:
             if action_land['sun_roof'] == 0:
@@ -162,23 +179,23 @@ def on_message(client, userdata, msg):
                 action_land['sun_roof'] = 1
                 is_send = True
         # --------------------
-        t = TOPIC_HANHDONG
-        t = t.replace('+', str(land_id))
-        action_land_json = json.dumps(action_land)
-        try:
-            client.publish(t, action_land_json, qos=1)
-            print(t)
-            print(f"da publish {action_land_json}")
-        except Exception as pub_error:
-            print("Error publishing:", pub_error)
-        # if is_send:
-        #     t = TOPIC_HANHDONG
-        #     t = t.replace('+', str(land_id))
-        #     action_land_json = json.dumps(action_land)
-        #     try:
-        #         client.publish(t, action_land_json, qos=1)
-        #     except Exception as pub_error:
-        #         print("Error publishing:", pub_error)
+        # t = TOPIC_HANHDONG
+        # t = t.replace('+', str(land_id))
+        # action_land_json = json.dumps(action_land)
+        # try:
+        #     client.publish(t, action_land_json, qos=1)
+        #     print("topic:", t)
+        #     print(f"publish data {action_land_json}")
+        # except Exception as pub_error:
+        #     print("Error publishing:", pub_error)
+        if is_send:
+            t = TOPIC_HANHDONG
+            t = t.replace('+', str(land_id))
+            action_land_json = json.dumps(action_land)
+            try:
+                client.publish(t, action_land_json, qos=1)
+            except Exception as pub_error:
+                print("Error publishing:", pub_error)
 
     elif 'status' in topic:
         hanhdong_data = {

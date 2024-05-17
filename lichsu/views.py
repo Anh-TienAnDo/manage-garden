@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from .models import *
+from .serializers import *
+import json
+from rest_framework import viewsets
 
 #add id to the parameter
 def get_ds_lichsu(request, id):
@@ -9,15 +13,7 @@ def get_ds_lichsu(request, id):
         'land_id': id,
     })
 
-# change this snippet from ManageGarden/lichsu/views.py:
-def add_lichsu(request):
-    manhdat = ManhDat.objects.get(pk=1)
-    lichsu = LichSuCamBien(
-        manhdat = manhdat,
-        nhiet_do = 30,
-        do_am = 60,
-        do_am_dat = 80,
-        anh_sang = 220,
-    )
-    lichsu.save()
-    return redirect(to='ds-lichsu')
+def get_sensor_data(request, land_id):
+    lichsu = LichSuCamBien.objects.filter(manhdat__id=land_id).order_by('-created_at')[:30]
+    data = LichSuCamBienSerializer(lichsu, many=True).data
+    return JsonResponse(data)

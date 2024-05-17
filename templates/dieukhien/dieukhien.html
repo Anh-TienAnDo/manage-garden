@@ -5,6 +5,8 @@
 {%block header%}
 {% include 'header.html' %}
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
 <style>
 	table {
 		border-collapse: collapse;
@@ -45,6 +47,37 @@
 
 </div>
 
+<div class="row">
+	<div class="col-3">
+		<p class="text-center">Nhiệt độ hiện tại</p>
+	</div>
+	<div class="col-3">
+		<p class="text-center">Độ ẩm hiện tại</p>
+	</div>
+	<div class="col-3">
+		<p class="text-center">Ánh sáng hiện tại</p>
+	</div>
+	<div class="col-3">
+		<p class="text-center">Độ ẩm đất hiện tại</p>
+	</div>
+
+</div>
+<div class="row">
+	<div class="col-3 text-center">
+		<p id="tem-now"></p>
+	</div>
+	<div class="col-3 text-center">
+		<p id="hum-now"></p>
+	</div>
+	<div class="col-3 text-center">
+		<p id="light-now"></p>
+	</div>
+	<div class="col-3 text-center">
+		<p id="land-now"></p>
+	</div>
+
+</div>
+
 <div class="px-3">
 	<div class="w-full my-6 mx-auto p-6 rounded-xl">
 		<div>
@@ -77,15 +110,20 @@
 							</td>
 							<td class="font-bold left-align border border-dark text-center"><button type="submit"
 									class="btn btn-success" name="update">Cập nhật</button></td>
-							{% if lichsu.den_chieu_sang%}
-							<td class="font-bold left-align border border-dark text-center"><button type="submit"
-									class="btn btn-warning" name="action" value="turn_off">Tắt ngay</button></td>
-							{% else %}
-							<td class="font-bold left-align border border-dark text-center"><button type="submit"
-									class="btn btn-warning" name="action" value="turn_on">Bật ngay</button></td>
-							{% endif %}
 
 						</form>
+						{% if lichsu.den_chieu_sang%}
+						<td class="font-bold left-align border border-dark text-center">
+							<a href="{% url 'dieukhien:update-lamp' id=land_id %}" class="btn btn-warning" name="action"
+								value="turn_off">Tắt ngay</a>
+						</td>
+						{% else %}
+						<td class="font-bold left-align border border-dark text-center">
+							<a href="{% url 'dieukhien:update-lamp' id=land_id %}" class="btn btn-warning" name="action"
+								value="turn_on">Bật ngay</a>
+						</td>
+						{% endif %}
+
 					</tr>
 					<tr>
 						<td class="left-align border border-dark">Bật vòi tưới nước</td>
@@ -99,14 +137,19 @@
 									class="border border-dark w-1/6 rounded-xl text-center"> %</td>
 							<td class="font-bold left-align border border-dark text-center"><button type="submit"
 									class="btn btn-success" name="update">Cập nhật</button></td>
-							{% if lichsu.may_tuoi_nuoc%}
-							<td class="font-bold left-align border border-dark text-center"><button type="submit"
-									class="btn btn-warning" name="action" value="turn_off">Tắt ngay</button></td>
-							{% else %}
-							<td class="font-bold left-align border border-dark text-center"><button type="submit"
-									class="btn btn-warning" name="action" value="turn_on">Bật ngay</button></td>
-							{% endif %}
+
 						</form>
+						{% if lichsu.may_tuoi_nuoc%}
+						<td class="font-bold left-align border border-dark text-center">
+							<a href="{% url 'dieukhien:update-pump' id=land_id %}" class="btn btn-warning" name="action"
+								value="turn_off">Tắt ngay</a>
+						</td>
+						{% else %}
+						<td class="font-bold left-align border border-dark text-center">
+							<a href="{% url 'dieukhien:update-pump' id=land_id %}" class="btn btn-warning" name="action"
+								value="turn_off">Tắt ngay</a>
+						</td>
+						{% endif %}
 					</tr>
 					<tr>
 						<td class="left-align border border-dark">Quạt làm mát</td>
@@ -120,14 +163,19 @@
 									class="border border-dark w-1/6 rounded-xl text-center"> *C</td>
 							<td class="font-bold left-align border border-dark text-center"><button type="submit"
 									class="btn btn-success" name="update">Cập nhật</button></td>
-							{% if lichsu.quat_mat%}
-							<td class="font-bold left-align border border-dark text-center"><button type="submit"
-									class="btn btn-warning" name="action" value="turn_off">Tắt ngay</button></td>
-							{% else %}
-							<td class="font-bold left-align border border-dark text-center"><button type="submit"
-									class="btn btn-warning" name="action" value="turn_on">Bật ngay</button></td>
-							{% endif %}
+
 						</form>
+						{% if lichsu.quat_mat%}
+						<td class="font-bold left-align border border-dark text-center">
+							<a href="{% url 'dieukhien:update-fan' id=land_id %}" class="btn btn-warning" name="action"
+								value="turn_off">Tắt ngay</a>
+						</td>
+						{% else %}
+						<td class="font-bold left-align border border-dark text-center">
+							<a href="{% url 'dieukhien:update-fan' id=land_id %}" class="btn btn-warning" name="action"
+								value="turn_off">Tắt ngay</a>
+						</td>
+						{% endif %}
 					</tr>
 					<tr>
 						<td class="left-align w-1/5 border border-dark">Mái che nắng(giả sử trồng cây trong nhà
@@ -150,14 +198,19 @@
 							</td>
 							<td class="font-bold left-align border border-dark text-center"><button type="submit"
 									class="btn btn-success" name="update">Cập nhật</button></td>
-							{% if lichsu.mai_che%}
-							<td class="font-bold left-align border border-dark text-center"><button type="submit"
-									class="btn btn-warning" name="action" value="turn_off">Đóng ngay</button></td>
-							{% else %}
-							<td class="font-bold left-align border border-dark text-center"><button type="submit"
-									class="btn btn-warning" name="action" value="turn_on">Mở ngay</button></td>
-							{% endif %}
+
 						</form>
+						{% if lichsu.mai_che%}
+						<td class="font-bold left-align border border-dark text-center">
+							<a href="{% url 'dieukhien:update-roof' id=land_id %}" class="btn btn-warning" name="action"
+								value="turn_off">Đóng ngay</a>
+						</td>
+						{% else %}
+						<td class="font-bold left-align border border-dark text-center">
+							<a href="{% url 'dieukhien:update-roof' id=land_id %}" class="btn btn-warning" name="action"
+								value="turn_off">Đóng ngay</a>
+						</td>
+						{% endif %}
 					</tr>
 				</table>
 				</tbody>
@@ -167,6 +220,65 @@
 
 </div>
 
+<script>
+	const TOPIC_CAMBIEN = '/htn/g6_smart_garden/+/sensor';
+	const tem_now = document.getElementById('tem-now');
+	const hum_now = document.getElementById('hum-now');
+	const light_now = document.getElementById('light-now');
+	const land_now = document.getElementById('land-now');
 
+	const clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8)
+	const host = 'ws://broker.emqx.io:8083/mqtt'
+	const options = {
+		keepalive: 60,
+		clientId: clientId,
+		protocolId: 'MQTT',
+		protocolVersion: 4,
+		clean: true,
+		reconnectPeriod: 1000,
+		connectTimeout: 30 * 1000,
+		will: {
+			topic: 'WillMsg',
+			payload: 'Connection Closed abnormally..!',
+			qos: 0,
+			retain: false
+		},
+		username: 'emqx',
+		password: '12345678'
+	}
+	console.log('Connecting mqtt client');
+	const client = mqtt.connect(host, options);
+	client.on('error', (err) => {
+		console.log('Connection error: ', err);
+		client.end();
+	})
+	client.on('reconnect', () => {
+		console.log('Reconnecting...');
+	})
+
+	// Handle connection event
+	client.on('connect', () => {
+		console.log('Connected to MQTT broker');
+		client.subscribe(TOPIC_CAMBIEN, (err) => {
+			if (!err) {
+				console.log(`Subscribed to topic '${TOPIC_CAMBIEN}'`);
+			} else {
+				console.error(`Failed to subscribe to topic '${TOPIC_CAMBIEN}'`, err);
+			}
+		});
+	});
+
+	// Receive
+	client.on('message', (topic, message, packet) => {
+		console.log(`Received Message: ${message.toString()} On topic: ${topic}`);
+		const data = JSON.parse(message.toString());
+		console.log(data);
+		tem_now.innerHTML = data.air_temperature + '°C';
+		hum_now.innerHTML = data.air_humidity + '%';
+		light_now.innerHTML = data.light + ' lux';
+		land_now.innerHTML = (parseFloat(data.soil_moisture) / 1024 * 100).toString() + '%';
+
+	})
+</script>
 
 {% endblock main-content%}

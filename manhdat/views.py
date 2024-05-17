@@ -42,3 +42,10 @@ def users_of_land(request, id):
         'users': users,
     }
     return HttpResponse(template.render(context, request))
+
+def delete_user_of_land(request, land_id, user_id):
+    land = ManhDat.objects.get(id=land_id)
+    user = User.objects.get(id=user_id)
+    user_of_land = UserManhDat.objects.filter(manhdat=land, user=user).first()
+    user_of_land.delete()
+    return redirect('users-of-land', id=land_id)

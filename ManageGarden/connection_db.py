@@ -74,13 +74,13 @@ class ConnectionDB:
             result = cursor.fetchall()
             return result
         
-d=ConnectionDB()
+# d=ConnectionDB()
 # hanhdong_data = {
 #     'mai_che': 0,
 #     'quat_mat': 0,
 #     'may_tuoi_nuoc': 0,
-#     'den_chieu_sang': 1,
-#     'manhdat_id': 2,
+#     'den_chieu_sang': 0,
+#     'manhdat_id': 1,
 # }
 # d.insert_lichsuhanhdong('lichsu_lichsuhanhdong', hanhdong_data)
 # print(d.select_all('lichsu_lichsuhanhdong'))
@@ -93,6 +93,19 @@ d=ConnectionDB()
 # }
 # d.insert_lichsucambien('lichsu_lichsucambien', cambien_data)
 # print(d.select_all('lichsu_lichsucambien'))
-print(d.select_all('manhdat_manhdat'))
+# print(d.select_all('manhdat_manhdat'))
+# DIEUKHIEN_TABLE = 'dieukhien_dieukhien'
+# dieukhien_land = d.select_by_dieukhienmanhdat(DIEUKHIEN_TABLE, 1)
+# now_seconds = (datetime.now() - datetime.combine(datetime.now(), datetime.min.time())).seconds
+# lamp_time_off = datetime.strptime(str(dieukhien_land.get('lamp_time_off')), '%H:%M:%S').time()
+# lamp_time_on = datetime.strptime(str(dieukhien_land.get('lamp_time_on')), '%H:%M:%S').time()
+# lamp_time_on_seconds = (datetime.combine(datetime.min, lamp_time_on) - datetime.min).seconds
+# lamp_time_off_seconds = (datetime.combine(datetime.min, lamp_time_off) - datetime.min).seconds
+# print(now_seconds)
+# print(datetime.now() - datetime.combine(datetime.now(), datetime.min.time()))
+# print(lamp_time_on)
+# print(lamp_time_on_seconds)
+# lamp_time_off_seconds = dieukhien_land.get('lamp_time_off').seconds
+# lamp_time_on_seconds = dieukhien_land.get('lamp_time_on').seconds
 
 

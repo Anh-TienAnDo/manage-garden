@@ -6,5 +6,5 @@ app_name = 'lichsu'
 
 urlpatterns = [
     path('<int:id>/', get_ds_lichsu, name='lichsu-land'),
-    path('add-lichsu/', add_lichsu, name='add-lichsu'),
+    path('api/sensor-data/<int:land_id>/', get_sensor_data, name='get_sensor_data'),
 ]
