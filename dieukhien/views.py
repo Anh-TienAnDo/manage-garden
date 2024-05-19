@@ -40,20 +40,27 @@ def publish_mqtt(land_id, action_land):
     t = t.replace('+', str(land_id))
     action_land_json = json.dumps(action_land)
     time_past = datetime.now()
+    so_lan_gui_toi_da = 10 
     while True:
+        if so_lan_gui_toi_da <= 0:
+            print("Error Chip not response")
+            break
         time_now = datetime.now()
-        if time_now - time_past > 0.3:
+        if (time_now - time_past).total_seconds() > 0.3:
             lich_su_hanh_dong_gan_nhat = LichSuHanhDong.objects.filter(manhdat__id=land_id).order_by('-created_at').first()
             action_land_old = get_action_land(lich_su_hanh_dong_gan_nhat)
+            # print("action_land_old:", action_land_old)
+            # print("action_land:", action_land)
             if check_action_land(action_land, action_land_old):
                 break
             try:
                 client.publish(t, action_land_json, qos=1)
                 print("topic:", t)
                 print(f"publish data: {action_land_json}")
+                so_lan_gui_toi_da -= 1
             except Exception as pub_error:
                 print("Error publishing:", pub_error)
-                time_past = datetime.now()
+            time_past = datetime.now()
 
 def get_home(request):
     return render(request, 'home.html')
@@ -73,6 +80,7 @@ def updateLamp(request, id):
     method = request.method
     if method == 'GET':
         action = request.GET.get('action')
+        print(action)
         action_land = get_action_land(lich_su_hanh_dong_gan_nhat)
         if action == "turn_on":
             action_land.update({'lamp': 1})
@@ -108,7 +116,7 @@ def updateLamp(request, id):
 
     #     publish_mqtt(id, action_land)
     
-    return redirect('dieukhien', id=id)
+    return redirect('dieukhien:dieukhien', id=id)
 
 def updatePump(request, id):
     dieu_khien = DieuKhien.objects.filter(manhdat__id=id).first()
@@ -116,6 +124,7 @@ def updatePump(request, id):
     method = request.method
     if method == 'GET':
         action = request.GET.get('action')
+        print(action)
         action_land = get_action_land(lich_su_hanh_dong_gan_nhat)
         if action == "turn_on":
             action_land.update({'water_pump': 1})
@@ -133,7 +142,7 @@ def updatePump(request, id):
             dieu_khien.water_pump_off = water_pump_off
             dieu_khien.save()
         
-    return redirect('dieukhien', id=id)
+    return redirect('dieukhien:dieukhien', id=id)
 
 def updateFan(request, id):
     dieu_khien = DieuKhien.objects.filter(manhdat__id=id).first()
@@ -142,6 +151,7 @@ def updateFan(request, id):
     method = request.method
     if method == 'GET':
         action = request.GET.get('action')
+        print(action)
         action_land = get_action_land(lich_su_hanh_dong_gan_nhat)
         if action == "turn_on":
             action_land.update({'fan': 1})
@@ -159,7 +169,7 @@ def updateFan(request, id):
             dieu_khien.fan_off = fan_off
             dieu_khien.save()
     
-    return redirect('dieukhien', id=id)
+    return redirect('dieukhien:dieukhien', id=id)
 
 def updateRoof(request, id):
     dieu_khien = DieuKhien.objects.filter(manhdat__id=id).first()
@@ -168,6 +178,7 @@ def updateRoof(request, id):
     method = request.method
     if method == 'GET':
         action = request.GET.get('action')
+        print(action)
         action_land = get_action_land(lich_su_hanh_dong_gan_nhat)
         if action == "turn_on":
             action_land.update({'sun_roof': 1})
@@ -190,7 +201,7 @@ def updateRoof(request, id):
             dieu_khien.sun_roof_time_open = sun_roof_time_open
             dieu_khien.save()
     
-    return redirect('dieukhien', id=id)
+    return redirect('dieukhien:dieukhien', id=id)
 
     
     

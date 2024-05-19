@@ -32,7 +32,7 @@
 	<b>Quản lý mảnh đất {{land_id}} </b>
 </div>
 
-<div class="row">
+<div class="row mb-3">
 	<div class="col-6 mx-auto text-center">
 		<a href="{% url 'users-of-land' id=land_id%}" class="btn btn-outline-primary">
 			Quản lý cộng tác viên
@@ -47,7 +47,8 @@
 
 </div>
 
-<div class="row">
+
+<div class="row my-3">
 	<div class="col-3">
 		<p class="text-center">Nhiệt độ hiện tại</p>
 	</div>
@@ -112,15 +113,16 @@
 									class="btn btn-success" name="update">Cập nhật</button></td>
 
 						</form>
+
 						{% if lichsu.den_chieu_sang%}
 						<td class="font-bold left-align border border-dark text-center">
-							<a href="{% url 'dieukhien:update-lamp' id=land_id %}" class="btn btn-warning" name="action"
-								value="turn_off">Tắt ngay</a>
+							<a href="{% url 'dieukhien:update-lamp' id=land_id %}?action=turn_off" class="btn btn-warning"
+								>Tắt ngay</a>
 						</td>
 						{% else %}
 						<td class="font-bold left-align border border-dark text-center">
-							<a href="{% url 'dieukhien:update-lamp' id=land_id %}" class="btn btn-warning" name="action"
-								value="turn_on">Bật ngay</a>
+							<a href="{% url 'dieukhien:update-lamp' id=land_id %}?action=turn_on" class="btn btn-warning"
+								>Bật ngay</a>
 						</td>
 						{% endif %}
 
@@ -141,13 +143,11 @@
 						</form>
 						{% if lichsu.may_tuoi_nuoc%}
 						<td class="font-bold left-align border border-dark text-center">
-							<a href="{% url 'dieukhien:update-pump' id=land_id %}" class="btn btn-warning" name="action"
-								value="turn_off">Tắt ngay</a>
+							<a href="{% url 'dieukhien:update-pump' id=land_id %}?action=turn_off" class="btn btn-warning">Tắt ngay</a>
 						</td>
 						{% else %}
 						<td class="font-bold left-align border border-dark text-center">
-							<a href="{% url 'dieukhien:update-pump' id=land_id %}" class="btn btn-warning" name="action"
-								value="turn_off">Tắt ngay</a>
+							<a href="{% url 'dieukhien:update-pump' id=land_id %}?action=turn_on" class="btn btn-warning">Bật ngay</a>
 						</td>
 						{% endif %}
 					</tr>
@@ -167,13 +167,13 @@
 						</form>
 						{% if lichsu.quat_mat%}
 						<td class="font-bold left-align border border-dark text-center">
-							<a href="{% url 'dieukhien:update-fan' id=land_id %}" class="btn btn-warning" name="action"
-								value="turn_off">Tắt ngay</a>
+							<a href="{% url 'dieukhien:update-fan' id=land_id %}?action=turn_off" class="btn btn-warning"
+							>Tắt ngay</a>
 						</td>
 						{% else %}
 						<td class="font-bold left-align border border-dark text-center">
-							<a href="{% url 'dieukhien:update-fan' id=land_id %}" class="btn btn-warning" name="action"
-								value="turn_off">Tắt ngay</a>
+							<a href="{% url 'dieukhien:update-fan' id=land_id %}?action=turn_on" class="btn btn-warning"
+							>Bật ngay</a>
 						</td>
 						{% endif %}
 					</tr>
@@ -202,13 +202,13 @@
 						</form>
 						{% if lichsu.mai_che%}
 						<td class="font-bold left-align border border-dark text-center">
-							<a href="{% url 'dieukhien:update-roof' id=land_id %}" class="btn btn-warning" name="action"
-								value="turn_off">Đóng ngay</a>
+							<a href="{% url 'dieukhien:update-roof' id=land_id %}?action=turn_off" class="btn btn-warning"
+							>Đóng ngay</a>
 						</td>
 						{% else %}
 						<td class="font-bold left-align border border-dark text-center">
-							<a href="{% url 'dieukhien:update-roof' id=land_id %}" class="btn btn-warning" name="action"
-								value="turn_off">Đóng ngay</a>
+							<a href="{% url 'dieukhien:update-roof' id=land_id %}?action=turn_on" class="btn btn-warning"
+							>Mở ngay</a>
 						</td>
 						{% endif %}
 					</tr>

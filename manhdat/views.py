@@ -36,6 +36,17 @@ def users_of_land(request, id):
         temp['role'] = user_manhdat.role
         users.append(temp)
 
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        role = 2
+        user = User.objects.filter(username=username).first()
+        if user:
+            user_of_land = UserManhDat(user=user, manhdat=land, role=role)
+            user_of_land.save()
+            return redirect('users-of-land', id=id)
+        else:
+            return redirect('users-of-land', id=id)
+
     template = loader.get_template('manhdat/users_of_land.html')
     context = {
         'land_id': id,
