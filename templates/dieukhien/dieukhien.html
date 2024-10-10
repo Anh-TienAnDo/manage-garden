@@ -23,6 +23,7 @@
 	.right-align {
 		text-align: right;
 	}
+
 </style>
 {% endblock header%}
 
@@ -131,7 +132,7 @@
 						<td class="left-align border border-dark">Bật vòi tưới nước</td>
 						<form action="{% url 'dieukhien:update-pump' id=land_id %}" method="post">
 							{% csrf_token %}
-							<td class="left-align border border-dark">Bật khi độ ẩm < <input type="number" min="30"
+							<td class="left-align border border-dark">Bật khi độ ẩm < <input type="number" min="0"
 									max="100" name="water_pump_on" value="{{ dieukhien.water_pump_on }}"
 									class="border border-dark w-1/6 rounded-xl text-center"> %</td>
 							<td class="left-align border border-dark">Tắt khi độ ẩm > <input type="number" min="50"

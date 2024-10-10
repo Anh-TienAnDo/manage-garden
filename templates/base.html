@@ -11,6 +11,14 @@
                 integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
                 crossorigin="anonymous">
 
+        <style>
+                body {
+                    background-image: url("{% static 'images/bg4.jpg' %}");
+                    background-size: cover; /* This makes sure the background covers the entire page */
+                    background-position: center; /* Center the background image */
+                    background-repeat: no-repeat; /* Prevent the background from repeating */
+                }
+        </style>
 
         <!-- js -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
@@ -27,7 +35,7 @@
 </head>
 
 <body>
-        <div class="card">
+        <div class="card bg-transparent">
                 <div class="card-header">
                         {% block header %} {% endblock header %}
                 </div>
@@ -41,6 +49,7 @@
                         {% block main-content%} {% endblock main-content %}
 
                 </div>
+
         </div>
 
 </body>

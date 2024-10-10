@@ -76,7 +76,7 @@ def on_message(client, userdata, msg):
         try:
             nhiet_do = float(data["air_temperature"])
             do_am = float(data["air_humidity"])
-            do_am_dat = float(data["soil_moisture"])/1024*100
+            do_am_dat = (float(data["soil_moisture"])/1024)*100
             anh_sang = float(data["light"])
         except:
             print(f"Error get data from {topic}")
